@@ -61,7 +61,7 @@ ifeq "$(wildcard $(KERNEL_SRC) )" ""
         $(warning * THIS IS DEPRECATED, AND WILL BE DISCONTINUED                *)
         $(warning * Please configure your device to download the kernel         *)
         $(warning * source repository to $(KERNEL_SRC))
-        $(warning * See http://wiki.cyanogenmod.org/w/Doc:_integrated_kernel_building)
+        $(warning * See http://wiki.cyanogenmod.com/wiki/Integrated_kernel_building)
         $(warning * for more information                                        *)
         $(warning ***************************************************************)
         FULL_KERNEL_BUILD := false
@@ -102,29 +102,29 @@ else
     endif
 endif
 
-USE_SOMC_BOARD ?= $(shell perl -e '$$somc = "n"; while (<>) { if (/CONFIG_MACH_SONY_.+=y/) { $$somc = "y"; break } } print $$somc;' $(KERNEL_SRC)/arch/$(TARGET_ARCH)/configs/$(KERNEL_DEFCONFIG))
+USE_SOMC_BOARD ?= $(shell perl -e '$$somc = "n"; while (<>) { if (/CONFIG_MACH_SONY_.+=y/) { $$somc = "y"; break } } print $$somc;' $(KERNEL_SRC)/arch/arm/configs/$(KERNEL_DEFCONFIG))
 
 ifeq "$(USE_SOMC_BOARD)" "y"
 DTS_NAMES ?= msm8974 apq8074
 SOMC_BOARD = $(shell echo $(KERNEL_DEFCONFIG) | sed -e "s/cm_//" | sed -e "s/_defconfig//")
 endif
 DTS_NAMES ?= $(shell perl -e 'while (<>) {$$a = $$1 if /CONFIG_ARCH_((?:MSM|QSD|MPQ)[a-zA-Z0-9]+)=y/; $$r = $$1 if /CONFIG_MSM_SOC_REV_(?!NONE)(\w+)=y/; $$arch = $$arch.lc("$$a$$r ") if /CONFIG_ARCH_((?:MSM|QSD|MPQ)[a-zA-Z0-9]+)=y/} print $$arch;' $(KERNEL_CONFIG))
-KERNEL_USE_OF ?= $(shell perl -e '$$of = "n"; while (<>) { if (/CONFIG_USE_OF=y/) { $$of = "y"; break; } } print $$of;' $(KERNEL_SRC)/arch/$(TARGET_ARCH)/configs/$(KERNEL_DEFCONFIG))
+KERNEL_USE_OF ?= $(shell perl -e '$$of = "n"; while (<>) { if (/CONFIG_USE_OF=y/) { $$of = "y"; break; } } print $$of;' $(KERNEL_SRC)/arch/arm/configs/$(KERNEL_DEFCONFIG))
 
 ifeq "$(KERNEL_USE_OF)" "y"
 ifeq "$(USE_SOMC_BOARD)" "y"
-DTS_FILES = $(wildcard $(TOP)/$(KERNEL_SRC)/arch/$(TARGET_ARCH)/boot/dts/$(DTS_NAME)*$(SOMC_BOARD).dts)
+DTS_FILES = $(wildcard $(TOP)/$(KERNEL_SRC)/arch/arm/boot/dts/$(DTS_NAME)*$(SOMC_BOARD).dts)
 else
-DTS_FILES = $(wildcard $(TOP)/$(KERNEL_SRC)/arch/$(TARGET_ARCH)/boot/dts/$(DTS_NAME)*.dts)
+DTS_FILES = $(wildcard $(TOP)/$(KERNEL_SRC)/arch/arm/boot/dts/$(DTS_NAME)*.dts)
 endif
 DTS_FILE = $(lastword $(subst /, ,$(1)))
-DTB_FILE = $(addprefix $(KERNEL_OUT)/arch/$(TARGET_ARCH)/boot/,$(patsubst %.dts,%.dtb,$(call DTS_FILE,$(1))))
-ZIMG_FILE = $(addprefix $(KERNEL_OUT)/arch/$(TARGET_ARCH)/boot/,$(patsubst %.dts,%-zImage,$(call DTS_FILE,$(1))))
-KERNEL_ZIMG = $(KERNEL_OUT)/arch/$(TARGET_ARCH)/boot/zImage
+DTB_FILE = $(addprefix $(KERNEL_OUT)/arch/arm/boot/,$(patsubst %.dts,%.dtb,$(call DTS_FILE,$(1))))
+ZIMG_FILE = $(addprefix $(KERNEL_OUT)/arch/arm/boot/,$(patsubst %.dts,%-zImage,$(call DTS_FILE,$(1))))
+KERNEL_ZIMG = $(KERNEL_OUT)/arch/arm/boot/zImage
 DTC = $(KERNEL_OUT)/scripts/dtc/dtc
 
 define append-dtb
-mkdir -p $(KERNEL_OUT)/arch/$(TARGET_ARCH)/boot;\
+mkdir -p $(KERNEL_OUT)/arch/arm/boot;\
 $(foreach DTS_NAME, $(DTS_NAMES), \
    $(foreach d, $(DTS_FILES), \
       $(DTC) -p 1024 -O dtb -o $(call DTB_FILE,$(d)) $(d); \
@@ -173,9 +173,9 @@ ifeq ($(TARGET_ARCH),arm)
     endif
     ifneq ($(TARGET_KERNEL_CUSTOM_TOOLCHAIN),)
         ifeq ($(HOST_OS),darwin)
-            ARM_CROSS_COMPILE:=CROSS_COMPILE="$(ccache) $(ANDROID_BUILD_TOP)/prebuilt/darwin-x86/toolchain/$(TARGET_KERNEL_CUSTOM_TOOLCHAIN)/bin/arm-eabi-"
+            ARM_CROSS_COMPILE:=CROSS_COMPILE="$(ccache) $(ANDROID_BUILD_TOP)/prebuilts/gcc/darwin-x86/arm/$(TARGET_KERNEL_CUSTOM_TOOLCHAIN)/bin/arm-eabi-"
         else
-            ARM_CROSS_COMPILE:=CROSS_COMPILE="$(ccache) $(ANDROID_BUILD_TOP)/prebuilt/linux-x86/toolchain/$(TARGET_KERNEL_CUSTOM_TOOLCHAIN)/bin/arm-eabi-"
+            ARM_CROSS_COMPILE:=CROSS_COMPILE="$(ccache) $(ANDROID_BUILD_TOP)/prebuilts/gcc/linux-x86/arm/$(TARGET_KERNEL_CUSTOM_TOOLCHAIN)/bin/arm-eabi-"
         endif
     else
         ARM_CROSS_COMPILE:=CROSS_COMPILE="$(ccache) $(ARM_EABI_TOOLCHAIN)/arm-eabi-"
