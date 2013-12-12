@@ -51,9 +51,9 @@ $(combo_target)GLOBAL_CFLAGS := -Os -fno-exceptions -Wno-multichar
 $(combo_target)RELEASE_CFLAGS := -Os -g -fno-strict-aliasing
 
 else ifeq ($(TARGET_USE_O_LEVEL_3),true)
-$(combo_target)GLOBAL_CFLAGS := -O3 -fno-exceptions -Wno-multichar -Wno-error=unused-parameter -Wno-unused-parameter -Wno-error=unused-but-set-variable -Wno-unused-but-set-variable
-$(combo_target)RELEASE_CFLAGS := -O3 -g -fno-tree-vectorize -fno-inline-functions -fno-unswitch-loops -Wstrict-aliasing=3 -Werror=strict-aliasing -fgcse-after-reload -fno-ipa-cp-clone -fno-vect-cost-model -Wno-error=unused-parameter -Wno-unused-parameter -Wno-error=unused-but-set-variable -Wno-unused-but-set-variable
-$(combo_target)GLOBAL_LDFLAGS := -Wl,-O3
+$(combo_target)GLOBAL_CFLAGS := -O3 -fno-exceptions -Wno-multichar
+$(combo_target)RELEASE_CFLAGS := -O3 -g -fno-strict-aliasing
+
 else
 $(combo_target)GLOBAL_CFLAGS := -O2 -fno-exceptions -Wno-multichar
 $(combo_target)RELEASE_CFLAGS := -O2 -g -fno-strict-aliasing
